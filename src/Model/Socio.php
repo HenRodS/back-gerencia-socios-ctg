@@ -1,6 +1,9 @@
 <?php
+namespace Model;
 
-require_once '../enum/StatusSocio.php';
+use enum\StatusSocio;
+
+
 
 class Socio{
 

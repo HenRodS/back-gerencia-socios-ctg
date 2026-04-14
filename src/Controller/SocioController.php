@@ -23,10 +23,10 @@ class SocioController{
 
             case "GET":
                 if ($id) {
-                    $response = $this->service->getSocioById((int)$id);
+                    $response = $this->socioService->getSocioById((int)$id);
                 } else {
                     $nome = $request->getQueryParam("nome");
-                    $response = $this->service->getSocios($nome);
+                    $response = $this->socioService->getSocios($nome);
                 }
                 break;
 
