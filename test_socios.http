@@ -6,62 +6,76 @@
 # GET / - API ENDPOINTS
 GET http://localhost:8000/api/
 
-###x'
-GET http://localhost:8000/api/socios/socios
+###
+
+# GET ALL SOCIOS - SUCCESS
+GET http://localhost:8000/api/socios
 Accept: application/json
 
 ###
-
-# GET SOCIOS FINANCEIRO - SUCCESS
-GET http://localhost:8000/api/socios/financeiro
-Accept: application/json
-
-###
-
-# GET SOCIOS INEXISTENTE - NOT FOUND
-GET http://localhost:8000/api/socios/inexistente
-Accept: application/json
-
-###
-
 
 # POST CREATE SOCIO - SUCCESS
 POST http://localhost:8000/api/socios
 Content-Type: application/json
 
 {
-	"nome": "Joao Silva",
-	"cpf": "123.456.789-00",
+	"nome": "Teste Silva",
+	"cpf": "999.999.999-99",
 	"telefone": "(11) 99999-9999",
 	"foto": "http://example.com/foto.jpg",
-	"identidade": "MG-12.345.678",
-	"endereco": "Rua Exemplo, 123",
+	"identidade": "MG-99.999.999",
+	"endereco": "Rua Teste, 999",
 	"data_nascimento": "1990-04-15",
-	"data_entrada": "2026-04-01",
+	"data_entrada": "2026-04-28",
 	"status": "Ativo",
-	"categoria_id": 2,
+	"categoria_id": 3,
 	"dancarino": true,
 	"paga_instrutor": false
 }
 
 ###
 
-# PUT UPDATE SOCIO - SUCCESS
-PUT http://localhost:8000/api/socios/1
-Content-Type: application/json
-
-{
-	"nome": "Joao Silva Atualizado",
-	"cpf": "123.456.789-00",
-	"telefone": "(11) 98888-8888",
-	"endereco": "Rua Nova, 456"
-}
-
-###
-
-# DELETE SOCIO - SUCCESS
-DELETE http://localhost:8000/api/socios/1
+# GET SOCIO SPECIFIC - SUCCESS (update with ID from POST)
+GET http://localhost:8000/api/socios/6
 Accept: application/json
 
 ###
 
+# PUT UPDATE SOCIO - SUCCESS
+PUT http://localhost:8000/api/socios/6
+Content-Type: application/json
+
+{
+	"nome": "Teste Silva Atualizado",
+	"cpf": "999.999.999-99",
+	"telefone": "(11) 98888-8888",
+	"foto": "http://example.com/foto2.jpg",
+	"identidade": "MG-99.999.999",
+	"endereco": "Rua Nova, 456",
+	"data_nascimento": "1990-04-15",
+	"data_entrada": "2026-04-28",
+	"status": "Ativo",
+	"categoria_id": 3,
+	"dancarino": true,
+	"paga_instrutor": true
+}
+
+###
+
+# GET UPDATED SOCIO - SUCCESS
+GET http://localhost:8000/api/socios/6
+Accept: application/json
+
+###
+
+# DELETE SOCIO - SUCCESS
+DELETE http://localhost:8000/api/socios/6
+Accept: application/json
+
+###
+
+# GET DELETED SOCIO - NOT FOUND
+GET http://localhost:8000/api/socios/6
+Accept: application/json
+
+###
