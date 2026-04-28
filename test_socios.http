@@ -1,0 +1,67 @@
+# ================================
+# SOCIOS HTTP TESTS
+# ================================
+
+
+# GET / - API ENDPOINTS
+GET http://localhost:8000/api/
+
+###x'
+GET http://localhost:8000/api/socios/socios
+Accept: application/json
+
+###
+
+# GET SOCIOS FINANCEIRO - SUCCESS
+GET http://localhost:8000/api/socios/financeiro
+Accept: application/json
+
+###
+
+# GET SOCIOS INEXISTENTE - NOT FOUND
+GET http://localhost:8000/api/socios/inexistente
+Accept: application/json
+
+###
+
+
+# POST CREATE SOCIO - SUCCESS
+POST http://localhost:8000/api/socios
+Content-Type: application/json
+
+{
+	"nome": "Joao Silva",
+	"cpf": "123.456.789-00",
+	"telefone": "(11) 99999-9999",
+	"foto": "http://example.com/foto.jpg",
+	"identidade": "MG-12.345.678",
+	"endereco": "Rua Exemplo, 123",
+	"data_nascimento": "1990-04-15",
+	"data_entrada": "2026-04-01",
+	"status": "Ativo",
+	"categoria_id": 2,
+	"dancarino": true,
+	"paga_instrutor": false
+}
+
+###
+
+# PUT UPDATE SOCIO - SUCCESS
+PUT http://localhost:8000/api/socios/1
+Content-Type: application/json
+
+{
+	"nome": "Joao Silva Atualizado",
+	"cpf": "123.456.789-00",
+	"telefone": "(11) 98888-8888",
+	"endereco": "Rua Nova, 456"
+}
+
+###
+
+# DELETE SOCIO - SUCCESS
+DELETE http://localhost:8000/api/socios/1
+Accept: application/json
+
+###
+

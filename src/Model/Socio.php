@@ -1,9 +1,9 @@
 <?php
 namespace Model;
 
+use DateTime;
+
 use enum\StatusSocio;
-
-
 
 class Socio{
 
