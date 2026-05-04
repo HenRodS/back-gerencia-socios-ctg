@@ -8,7 +8,7 @@ use Http\Response;
 use Model\Socio;
 use Service\SocioService;
 use DateTime;
-use StatusSocio;
+use \StatusSocio;
 
 class SocioController{
     private SocioService $socioService;

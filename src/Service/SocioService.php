@@ -5,9 +5,10 @@ use Error\APIException;
 use Model\Socio;
 use Repository\SocioRepository;
 use DateTime;
-use StatusSocio;
+use \StatusSocio;
 
-class SocioService{
+class SocioService
+{
     private SocioRepository $socioRepository;
 
     public function __construct(){
