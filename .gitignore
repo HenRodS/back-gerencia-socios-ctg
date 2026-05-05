@@ -1,0 +1,23 @@
+# Dependências
+/vendor/
+
+# Variáveis de Ambiente e Configurações Locais
+.env
+.env.*
+!.env.example
+
+# IDEs e Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+.trae/
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs e Cache
+*.log
+/logs/
+/cache/
