@@ -4,13 +4,16 @@ namespace Repository;
 
 use Database\Database;
 use Model\Socio;
+use Model\CartaoTrad;
+use Util\Endereco;
+use Util\StatusSocio;
+use Util\CategoriaSocio;
 use PDO;
 use DateTime;
-use \StatusSocio;
 
 class SocioRepository
 {
-    private $connection;
+    private PDO $connection;
 
     public function __construct()
     {
@@ -24,24 +27,8 @@ class SocioRepository
 
         $socios = [];
 
-        while ($row = $stmt->fetch()) {
-            $socio = new Socio(
-                $row['nome_completo'],
-                $row['cpf'],
-                $row['telefone'],
-                $row['foto'] ?? '',
-                $row['identidade'],
-                $row['endereco'],
-                new DateTime($row['data_nascimento']),
-                new DateTime($row['data_entrada']),
-                StatusSocio::from($row['status']),
-                $row['categoria_id'],
-                (bool)$row['dancarino'],
-                (bool)$row['paga_instrutor'],
-                $row['id']
-            );
-
-            $socios[] = $socio;
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $socios[] = $this->mapRow($row);
         }
 
         return $socios;
@@ -49,66 +36,27 @@ class SocioRepository
 
     public function findById(int $id): ?Socio
     {
-        $stmt = $this->connection->prepare("
-            SELECT * FROM socios
-            WHERE id = :id
-        ");
-
+        $stmt = $this->connection->prepare("SELECT * FROM socios WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$row) {
-            return null;
-        }
+        if (!$row) return null;
 
-        return new Socio(
-            $row['nome_completo'],
-            $row['cpf'],
-            $row['telefone'],
-            $row['foto'] ?? '',
-            $row['identidade'],
-            $row['endereco'],
-            new DateTime($row['data_nascimento']),
-            new DateTime($row['data_entrada']),
-            StatusSocio::from($row['status']),
-            $row['categoria_id'],
-            (bool)$row['dancarino'],
-            (bool)$row['paga_instrutor'],
-            $row['id']
-        );
+        return $this->mapRow($row);
     }
 
     public function findByName(string $name): array
     {
-        $stmt = $this->connection->prepare("
-            SELECT * FROM socios
-            WHERE nome_completo LIKE :nome
-        ");
-
-        $stmt->bindValue(':nome', '%' . $name . '%');
+        $stmt = $this->connection->prepare("SELECT * FROM socios WHERE nome_completo LIKE :nome");
+        $stmt->bindValue(':nome', "%$name%");
         $stmt->execute();
 
         $socios = [];
 
-        while ($row = $stmt->fetch()) {
-            $socio = new Socio(
-                $row['nome_completo'],
-                $row['cpf'],
-                $row['telefone'],
-                $row['foto'] ?? '',
-                $row['identidade'],
-                $row['endereco'],
-                new DateTime($row['data_nascimento']),
-                new DateTime($row['data_entrada']),
-                StatusSocio::from($row['status']),
-                $row['categoria_id'],
-                (bool)$row['dancarino'],
-                (bool)$row['paga_instrutor'],
-                $row['id']
-            );
-
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $socios[] = $this->mapRow($row);
         }
 
         return $socios;
@@ -126,10 +74,11 @@ class SocioRepository
                 endereco,
                 data_nascimento,
                 data_entrada,
-                categoria_id,
+                categoria,
                 status,
                 dancarino,
-                paga_instrutor
+                paga_instrutor,
+                cartao_trad_id
             )
             VALUES (
                 :nome_completo,
@@ -140,36 +89,32 @@ class SocioRepository
                 :endereco,
                 :data_nascimento,
                 :data_entrada,
-                :categoria_id,
+                :categoria,
                 :status,
                 :dancarino,
-                :paga_instrutor
+                :paga_instrutor,
+                :cartao_trad_id
             )
         ");
 
-        $stmt->bindValue(':nome_completo', $socio->getNome());
-        $stmt->bindValue(':cpf', $socio->getCpf());
-        $stmt->bindValue(':telefone', $socio->getTelefone());
-        $stmt->bindValue(':foto', $socio->getFoto());
-        $stmt->bindValue(':identidade', $socio->getIdentidade());
-        $stmt->bindValue(':endereco', $socio->getEndereco());
-        $stmt->bindValue(
-            ':data_nascimento',
-            $socio->getDataNascimento()->format('Y-m-d')
-        );
-        $stmt->bindValue(
-            ':data_entrada',
-            $socio->getDataEntrada()->format('Y-m-d')
-        );
-        $stmt->bindValue(':categoria_id', $socio->getCategoriaId(), PDO::PARAM_INT);
-        $stmt->bindValue(':status', $socio->getStatus()->value);
-        $stmt->bindValue(':dancarino', $socio->isDancarino() ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':paga_instrutor', $socio->isPagaInstrutor() ? 1 : 0, PDO::PARAM_INT);
+        $stmt->execute([
+            ':nome_completo' => $socio->getNome(),
+            ':cpf' => $socio->getCpf(),
+            ':telefone' => $socio->getTelefone(),
+            ':foto' => $socio->getFoto(),
+            ':identidade' => $socio->getIdentidade(),
+            ':endereco' => $this->enderecoToString($socio->getEndereco()),
+            ':data_nascimento' => $socio->getDataNascimento()->format('Y-m-d'),
+            ':data_entrada' => $socio->getDataEntrada()->format('Y-m-d'),
+            ':categoria' => $socio->getCategoria()->value,
+            ':status' => $socio->getStatus()->value,
+            ':dancarino' => $socio->isDancarino() ? 1 : 0,
+            ':paga_instrutor' => $socio->isPagaInstrutor() ? 1 : 0,
+            ':cartao_trad_id' => $socio->getCartaoTrad()?->getId()
+        ]);
 
-        $stmt->execute();
+        $id = (int)$this->connection->lastInsertId();
 
-        // Get the last inserted ID and return a new instance with it
-        $lastId = $this->connection->lastInsertId();
         return new Socio(
             $socio->getNome(),
             $socio->getCpf(),
@@ -180,10 +125,10 @@ class SocioRepository
             $socio->getDataNascimento(),
             $socio->getDataEntrada(),
             $socio->getStatus(),
-            $socio->getCategoriaId(),
+            $socio->getCategoria(),
             $socio->isDancarino(),
             $socio->isPagaInstrutor(),
-            (int)$lastId
+            $id
         );
     }
 
@@ -199,45 +144,98 @@ class SocioRepository
                 endereco = :endereco,
                 data_nascimento = :data_nascimento,
                 data_entrada = :data_entrada,
-                categoria_id = :categoria_id,
+                categoria = :categoria,
                 status = :status,
                 dancarino = :dancarino,
-                paga_instrutor = :paga_instrutor
+                paga_instrutor = :paga_instrutor,
+                cartao_trad_id = :cartao_trad_id
             WHERE id = :id
         ");
 
-        $stmt->bindValue(':id', $socio->getId(), PDO::PARAM_INT);
-        $stmt->bindValue(':nome_completo', $socio->getNome());
-        $stmt->bindValue(':cpf', $socio->getCpf());
-        $stmt->bindValue(':telefone', $socio->getTelefone());
-        $stmt->bindValue(':foto', $socio->getFoto());
-        $stmt->bindValue(':identidade', $socio->getIdentidade());
-        $stmt->bindValue(':endereco', $socio->getEndereco());
-        $stmt->bindValue(
-            ':data_nascimento',
-            $socio->getDataNascimento()->format('Y-m-d')
-        );
-        $stmt->bindValue(
-            ':data_entrada',
-            $socio->getDataEntrada()->format('Y-m-d')
-        );
-        $stmt->bindValue(':categoria_id', $socio->getCategoriaId(), PDO::PARAM_INT);
-        $stmt->bindValue(':status', $socio->getStatus()->value);
-        $stmt->bindValue(':dancarino', $socio->isDancarino() ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':paga_instrutor', $socio->isPagaInstrutor() ? 1 : 0, PDO::PARAM_INT);
-
-        $stmt->execute();
+        $stmt->execute([
+            ':id' => $socio->getId(),
+            ':nome_completo' => $socio->getNome(),
+            ':cpf' => $socio->getCpf(),
+            ':telefone' => $socio->getTelefone(),
+            ':foto' => $socio->getFoto(),
+            ':identidade' => $socio->getIdentidade(),
+            ':endereco' => $this->enderecoToString($socio->getEndereco()),
+            ':data_nascimento' => $socio->getDataNascimento()->format('Y-m-d'),
+            ':data_entrada' => $socio->getDataEntrada()->format('Y-m-d'),
+            ':categoria' => $socio->getCategoria()->value,
+            ':status' => $socio->getStatus()->value,
+            ':dancarino' => $socio->isDancarino() ? 1 : 0,
+            ':paga_instrutor' => $socio->isPagaInstrutor() ? 1 : 0,
+            ':cartao_trad_id' => $socio->getCartaoTrad()?->getId()
+        ]);
     }
 
     public function delete(int $id): void
     {
-        $stmt = $this->connection->prepare("
-            DELETE FROM socios
-            WHERE id = :id
-        ");
+        $stmt = $this->connection->prepare("DELETE FROM socios WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+    }
 
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+    private function mapRow(array $row): Socio
+    {
+        $endereco = $this->stringToEndereco($row['endereco']);
+
+        $socio = new Socio(
+            $row['nome_completo'],
+            $row['cpf'],
+            $row['telefone'],
+            $row['foto'] ?? '',
+            $row['identidade'],
+            $endereco,
+            new DateTime($row['data_nascimento']),
+            new DateTime($row['data_entrada']),
+            StatusSocio::from($row['status']),
+            CategoriaSocio::from($row['categoria']),
+            (bool)$row['dancarino'],
+            (bool)$row['paga_instrutor'],
+            (int)$row['id']
+        );
+
+        if (!empty($row['cartao_trad_id'])) {
+            $cartao = new CartaoTrad(
+                new DateTime(),
+                new DateTime(),
+                '',
+                0,
+                '',
+                (int)$row['cartao_trad_id']
+            );
+            $socio->setCartaoTrad($cartao);
+        }
+
+        return $socio;
+    }
+
+    private function enderecoToString(Endereco $e): string
+    {
+        return implode('|', [
+            $e->getLogradouro(),
+            $e->getNumero(),
+            $e->getComplemento(),
+            $e->getBairro(),
+            $e->getCidade(),
+            $e->getEstado(),
+            $e->getCep()
+        ]);
+    }
+
+    private function stringToEndereco(string $str): Endereco
+    {
+        [$logradouro, $numero, $complemento, $bairro, $cidade, $estado, $cep] = explode('|', $str);
+
+        return new Endereco(
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado,
+            $cep,
+            $complemento ?: null
+        );
     }
 }
-

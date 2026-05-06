@@ -4,8 +4,10 @@ namespace Repository;
 
 use Database\Database;
 use Model\Dependente;
+use Util\Endereco;
+use Util\CategoriaSocio;
 use PDO;
-
+use DateTime;
 
 class DependenteRepository
 {
@@ -58,12 +60,12 @@ class DependenteRepository
     {
         $sql = "INSERT INTO dependentes
                 (socio_titular_id, nome, cpf, telefone, foto, identidade,
-                 endereco, data_nascimento, data_entrada, categoria_id,
-                 dancarino, paga_instrutor)
+                 endereco, data_nascimento, data_entrada, categoria,
+                 dancarino, paga_instrutor, cartao_trad_id)
                 VALUES
                 (:socio_titular_id, :nome, :cpf, :telefone, :foto, :identidade,
-                 :endereco, :data_nascimento, :data_entrada, :categoria_id,
-                 :dancarino, :paga_instrutor)";
+                 :endereco, :data_nascimento, :data_entrada, :categoria,
+                 :dancarino, :paga_instrutor, :cartao_trad_id)";
 
         $stmt = $this->connection->prepare($sql);
         $this->bindDependenteParams($stmt, $dependente);
@@ -81,21 +83,27 @@ class DependenteRepository
 
     private function mapRowToDependente(array $row): Dependente
     {
-        return new Dependente(
+        $endereco = new Endereco($row['endereco']);
+
+        $categoria = CategoriaSocio::from($row['categoria']);
+
+        $dependente = new Dependente(
             (int)$row['socio_titular_id'],
             $row['nome'],
             $row['cpf'],
             $row['telefone'],
             $row['foto'],
             $row['identidade'],
-            $row['endereco'],
-            new \DateTime($row['data_nascimento']),
-            new \DateTime($row['data_entrada']),
-            (int)$row['categoria_id'],
+            $endereco,
+            new DateTime($row['data_nascimento']),
+            new DateTime($row['data_entrada']),
+            $categoria,
             (bool)$row['dancarino'],
             (bool)$row['paga_instrutor'],
             (int)$row['id']
         );
+
+        return $dependente;
     }
 
     private function bindDependenteParams($stmt, Dependente $dependente): void
@@ -106,11 +114,16 @@ class DependenteRepository
         $stmt->bindValue(':telefone', $dependente->getTelefone());
         $stmt->bindValue(':foto', $dependente->getFoto());
         $stmt->bindValue(':identidade', $dependente->getIdentidade());
-        $stmt->bindValue(':endereco', $dependente->getEndereco());
+        $stmt->bindValue(':endereco', (string)$dependente->getEndereco());
         $stmt->bindValue(':data_nascimento', $dependente->getDataNascimento()->format('Y-m-d'));
         $stmt->bindValue(':data_entrada', $dependente->getDataEntrada()->format('Y-m-d'));
-        $stmt->bindValue(':categoria_id', $dependente->getCategoriaId(), PDO::PARAM_INT);
-        $stmt->bindValue(':dancarino', $dependente->isDancarino(), PDO::PARAM_BOOL);
-        $stmt->bindValue(':paga_instrutor', $dependente->isPagaInstrutor(), PDO::PARAM_BOOL);
+        $stmt->bindValue(':categoria', $dependente->getCategoria()->value);
+        $stmt->bindValue(':dancarino', $dependente->isDancarino() ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(':paga_instrutor', $dependente->isPagaInstrutor() ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(
+            ':cartao_trad_id',
+            $dependente->getCartaoTrad()?->getId(),
+            $dependente->getCartaoTrad() ? PDO::PARAM_INT : PDO::PARAM_NULL
+        );
     }
 }

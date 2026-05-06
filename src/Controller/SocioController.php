@@ -7,8 +7,10 @@ use Http\Request;
 use Http\Response;
 use Model\Socio;
 use Service\SocioService;
+use Util\StatusSocio;
+use Util\Endereco;
+use Util\CategoriaSocio;
 use DateTime;
-use \StatusSocio;
 
 class SocioController{
     private SocioService $socioService;
@@ -41,17 +43,27 @@ class SocioController{
             case "POST":
                 $data = $request->getBody();
 
+                $endereco = new Endereco(
+                    $data['logradouro'],
+                    $data['numero'],
+                    $data['bairro'],
+                    $data['cidade'],
+                    $data['estado'],
+                    $data['cep'],
+                    $data['complemento'] ?? null
+                );
+
                 $socio = new Socio(
                     $data['nome'],
                     $data['cpf'],
                     $data['telefone'],
                     $data['foto'] ?? '',
                     $data['identidade'],
-                    $data['endereco'],
+                    $endereco,
                     new DateTime($data['data_nascimento']),
                     new DateTime($data['data_entrada']),
                     StatusSocio::from($data['status']),
-                    (int)$data['categoria_id'],
+                    CategoriaSocio::from($data['categoria']),
                     (bool)$data['dancarino'],
                     (bool)$data['paga_instrutor']
                 );
@@ -68,20 +80,30 @@ class SocioController{
 
                 $data = $request->getBody();
 
+                $endereco = new Endereco(
+                    $data['logradouro'],
+                    $data['numero'],
+                    $data['bairro'],
+                    $data['cidade'],
+                    $data['estado'],
+                    $data['cep'],
+                    $data['complemento'] ?? null
+                );
+
                 $socio = new Socio(
                     $data['nome'],
                     $data['cpf'],
                     $data['telefone'],
                     $data['foto'] ?? '',
                     $data['identidade'],
-                    $data['endereco'],
+                    $endereco,
                     new DateTime($data['data_nascimento']),
                     new DateTime($data['data_entrada']),
                     StatusSocio::from($data['status']),
-                    (int)$data['categoria_id'],
+                    CategoriaSocio::from($data['categoria']),
                     (bool)$data['dancarino'],
                     (bool)$data['paga_instrutor'],
-                    $id
+                    (int)$id
                 );
 
                 $this->socioService->update($socio);
@@ -110,5 +132,3 @@ class SocioController{
         }
     }
 }
-
-?>

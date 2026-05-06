@@ -3,7 +3,9 @@ namespace Model;
 
 use DateTime;
 use JsonSerializable;
-use StatusSocio;
+use Util\Endereco;
+use Util\StatusSocio;
+use Util\CategoriaSocio;
 
 class Socio implements JsonSerializable {
 
@@ -13,13 +15,20 @@ class Socio implements JsonSerializable {
     private string $telefone;
     private string $foto;
     private string $identidade;
-    private string $endereco;
+    private Endereco $endereco;
     private DateTime $dataNascimento;
     private DateTime $dataEntrada;
     private StatusSocio $status;
-    private int $categoriaId;
+
+    private CategoriaSocio $categoria;
     private bool $dancarino;
     private bool $pagaInstrutor;
+
+    /** @var Dependente[] */
+    private array $dependentes = [];
+
+    private ?CartaoTrad $cartaoTrad = null;
+
 
     public function __construct(
         string $nome,
@@ -27,81 +36,95 @@ class Socio implements JsonSerializable {
         string $telefone,
         string $foto,
         string $identidade,
-        string $endereco,
+        Endereco $endereco,
         DateTime $dataNascimento,
         DateTime $dataEntrada,
         StatusSocio $status,
-        int $categoriaId,
+        CategoriaSocio $categoria,
         bool $dancarino,
         bool $pagaInstrutor,
         ?int $id = null
     ){
         $this->id = $id;
-        $this -> nome = $nome;
-        $this -> cpf = $cpf;
-        $this -> telefone = $telefone;
-        $this -> foto = $foto;
-        $this -> identidade = $identidade;
-        $this -> endereco = $endereco;
-        $this -> dataNascimento = $dataNascimento;
-        $this -> dataEntrada = $dataEntrada;
-        $this -> status = $status;
-        $this -> categoriaId = $categoriaId; 
-        $this -> dancarino = $dancarino; 
-        $this -> pagaInstrutor = $pagaInstrutor;
+        $this->nome = $nome;
+        $this->cpf = $cpf;
+        $this->telefone = $telefone;
+        $this->foto = $foto;
+        $this->identidade = $identidade;
+        $this->endereco = $endereco;
+        $this->dataNascimento = $dataNascimento;
+        $this->dataEntrada = $dataEntrada;
+        $this->status = $status;
+        $this->categoria = $categoria;
+        $this->dancarino = $dancarino;
+        $this->pagaInstrutor = $pagaInstrutor;
     }
 
-    public function getId(): ?int{
+
+    // GETTERS
+
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getNome(): string{
+    public function getNome(): string {
         return $this->nome;
     }
 
-    public function getCpf(): string{
+    public function getCpf(): string {
         return $this->cpf;
     }
 
-    public function getTelefone(): string{
+    public function getTelefone(): string {
         return $this->telefone;
     }
 
-    public function getFoto(): string{
+    public function getFoto(): string {
         return $this->foto;
     }
 
-    public function getIdentidade(): string{
+    public function getIdentidade(): string {
         return $this->identidade;
     }
 
-    public function getEndereco(): string{
+    public function getEndereco(): Endereco {
         return $this->endereco;
     }
 
-    public function getDataNascimento(): DateTime{
+    public function getDataNascimento(): DateTime {
         return $this->dataNascimento;
     }
 
-    public function getDataEntrada(): DateTime{
+    public function getDataEntrada(): DateTime {
         return $this->dataEntrada;
     }
 
-    public function getStatus(): StatusSocio{
+    public function getStatus(): StatusSocio {
         return $this->status;
     }
 
-    public function getCategoriaId(): int{
-        return $this->categoriaId;
+    public function getCategoria(): CategoriaSocio {
+        return $this->categoria;
     }
 
-    public function isDancarino(): bool{
-        return $this->dancarino;    
+    public function isDancarino(): bool {
+        return $this->dancarino;
     }
 
-    public function isPagaInstrutor(): bool{
+    public function isPagaInstrutor(): bool {
         return $this->pagaInstrutor;
     }
+
+    public function getDependentes(): array {
+        return $this->dependentes;
+    }
+
+    public function getCartaoTrad(): ?CartaoTrad {
+        return $this->cartaoTrad;
+    }
+
+
+    // SETTERS
 
     public function setNome(string $nome): void {
         $this->nome = $nome;
@@ -112,12 +135,33 @@ class Socio implements JsonSerializable {
     }
 
     public function setTelefone(string $telefone): void {
-        $this->telefone = $telefone;    
+        $this->telefone = $telefone;
     }
 
-    public function setEndereco(string $endereco): void {
+    public function setEndereco(Endereco $endereco): void {
         $this->endereco = $endereco;
     }
+
+    public function setCategoria(CategoriaSocio $categoria): void {
+        $this->categoria = $categoria;
+    }
+
+    public function setDancarino(bool $dancarino): void {
+        $this->dancarino = $dancarino;
+    }
+
+    public function setPagaInstrutor(bool $pagaInstrutor): void {
+        $this->pagaInstrutor = $pagaInstrutor;
+    }
+
+    public function setCartaoTrad(?Ca+rtaoTrad $cartaoTrad): void {
+        $this->cartaoTrad = $cartaoTrad;
+    }
+
+    public function addDependente(Dependente $dependente): void {
+        $this->dependentes[] = $dependente;
+    }
+
 
     public function jsonSerialize(): mixed {
         return [
@@ -127,15 +171,13 @@ class Socio implements JsonSerializable {
             'telefone' => $this->telefone,
             'foto' => $this->foto,
             'identidade' => $this->identidade,
-            'endereco' => $this->endereco,
+            'endereco' => $this->endereco, // já serializa automático
             'data_nascimento' => $this->dataNascimento->format('Y-m-d'),
             'data_entrada' => $this->dataEntrada->format('Y-m-d'),
             'status' => $this->status->value,
-            'categoria_id' => $this->categoriaId,
+            'categoria' => $this->categoria->value,
             'dancarino' => $this->dancarino,
             'paga_instrutor' => $this->pagaInstrutor
         ];
     }
 }
-
-?>
