@@ -4,8 +4,10 @@ namespace Service;
 use Error\APIException;
 use Model\Socio;
 use Repository\SocioRepository;
+use Util\StatusSocio;
+use Util\Endereco;
+use Util\CategoriaSocio;
 use DateTime;
-use \StatusSocio;
 
 class SocioService
 {
@@ -42,12 +44,10 @@ class SocioService
         $this->socioRepository->delete($id);
     }
 
-    // Legacy method for backward compatibility
     public function getSocios(?string $nome): array {
         return $this->findByName($nome);
     }
 
-    // Legacy method for backward compatibility
     public function getSocioById(int $id): Socio {
         $socio = $this->findById($id);
         if (!$socio) {
@@ -56,21 +56,31 @@ class SocioService
         return $socio;
     }
 
-    // Legacy method for backward compatibility
     public function createSocio( 
         string $nome,
         string $cpf,
         string $telefone,
         string $foto,
         string $identidade,
-        string $endereco,
+        array $enderecoData,
         string $dataNascimento,
         string $dataEntrada,
         string $status,
-        int $categoriaId,
+        string $categoria,
         bool $dancarino,
         bool $pagaInstrutor
     ): Socio {
+
+        $endereco = new Endereco(
+            $enderecoData['logradouro'],
+            $enderecoData['numero'],
+            $enderecoData['bairro'],
+            $enderecoData['cidade'],
+            $enderecoData['estado'],
+            $enderecoData['cep'],
+            $enderecoData['complemento'] ?? null
+        );
+
         $socio = new Socio(
             nome: $nome,
             cpf: $cpf,
@@ -81,7 +91,7 @@ class SocioService
             dataNascimento: new DateTime($dataNascimento),
             dataEntrada: new DateTime($dataEntrada),
             status: StatusSocio::from($status),
-            categoriaId: $categoriaId,
+            categoria: CategoriaSocio::from($categoria),
             dancarino: $dancarino,
             pagaInstrutor: $pagaInstrutor
         );
@@ -89,15 +99,25 @@ class SocioService
         return $this->create($socio);
     }
 
-    // Legacy method for backward compatibility
     public function updateSocio(
         int $id,
         string $nome,
         string $cpf,
         string $telefone,
-        string $endereco
+        array $enderecoData
     ): Socio {
         $socio = $this->getSocioById($id);
+
+        $endereco = new Endereco(
+            $enderecoData['logradouro'],
+            $enderecoData['numero'],
+            $enderecoData['bairro'],
+            $enderecoData['cidade'],
+            $enderecoData['estado'],
+            $enderecoData['cep'],
+            $enderecoData['complemento'] ?? null
+        );
+
         $socio->setNome($nome);
         $socio->setCpf($cpf);
         $socio->setTelefone($telefone);
@@ -107,10 +127,7 @@ class SocioService
         return $socio;
     }
 
-    // Legacy method for backward compatibility
     public function deleteSocio(int $id): void {
         $this->delete($id);
     }
 }
-
-?>

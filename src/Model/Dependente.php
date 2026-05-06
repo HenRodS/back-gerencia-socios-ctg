@@ -1,6 +1,10 @@
 <?php
 namespace Model;
 
+use DateTime;
+use Util\Endereco;
+use Util\CategoriaSocio;
+
 class Dependente {
 
     private ?int $id;
@@ -10,14 +14,31 @@ class Dependente {
     private string $telefone;
     private string $foto;
     private string $identidade;
-    private string $endereco;
+    private Endereco $endereco;
     private DateTime $dataNascimento;
     private DateTime $dataEntrada;
-    private int $categoriaId;
+    private CategoriaSocio $categoria;
     private bool $dancarino;
     private bool $pagaInstrutor;
 
-    public function __construct(int $socioTitularId, string $nome, string $cpf, string $telefone, string $foto, string $identidade, string $endereco, DateTime $dataNascimento, DateTime $dataEntrada, int $categoriaId, bool $dancarino, bool $pagaInstrutor, ?int $id = null ){
+    private ?CartaoTrad $cartaoTrad = null;
+
+    public function __construct(
+        int $socioTitularId,
+        string $nome,
+        string $cpf,
+        string $telefone,
+        string $foto,
+        string $identidade,
+        Endereco $endereco,
+        DateTime $dataNascimento,
+        DateTime $dataEntrada,
+        CategoriaSocio $categoria,
+        bool $dancarino,
+        bool $pagaInstrutor,
+        ?int $id = null,
+        ?CartaoTrad $cartaoTrad = null
+    ){
         $this->id = $id;
         $this->socioTitularId = $socioTitularId;
         $this->nome = $nome;
@@ -28,9 +49,10 @@ class Dependente {
         $this->endereco = $endereco;
         $this->dataNascimento = $dataNascimento;
         $this->dataEntrada = $dataEntrada;
-        $this->categoriaId = $categoriaId;
+        $this->categoria = $categoria;
         $this->dancarino = $dancarino;
         $this->pagaInstrutor = $pagaInstrutor;
+        $this->cartaoTrad = $cartaoTrad;
     }
 
     public function getId(): ?int {
@@ -61,7 +83,7 @@ class Dependente {
         return $this->identidade;
     }
 
-    public function getEndereco(): string {
+    public function getEndereco(): Endereco {
         return $this->endereco;
     }
 
@@ -73,8 +95,8 @@ class Dependente {
         return $this->dataEntrada;
     }
 
-    public function getCategoriaId(): int {
-        return $this->categoriaId;
+    public function getCategoria(): CategoriaSocio {
+        return $this->categoria;
     }
 
     public function isDancarino(): bool {
@@ -83,5 +105,21 @@ class Dependente {
 
     public function isPagaInstrutor(): bool {
         return $this->pagaInstrutor;
+    }
+
+    public function getCartaoTrad(): ?CartaoTrad {
+        return $this->cartaoTrad;
+    }
+
+    public function setEndereco(Endereco $endereco): void {
+        $this->endereco = $endereco;
+    }
+
+    public function setCategoria(CategoriaSocio $categoria): void {
+        $this->categoria = $categoria;
+    }
+
+    public function setCartaoTrad(?CartaoTrad $cartaoTrad): void {
+        $this->cartaoTrad = $cartaoTrad;
     }
 }

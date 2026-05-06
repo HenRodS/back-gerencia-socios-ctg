@@ -62,7 +62,6 @@ class CartaoTradService
             throw new APIException("Cartão não encontrado!", 404);
         }
 
-        // atualizações usando setters
 
         if (isset($data['data_entrada'])) {
             $cartao->setDataEntrada(new DateTime($data['data_entrada']));
