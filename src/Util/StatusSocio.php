@@ -1,6 +1,6 @@
 <?php
 
-namespace Util
+namespace Util;
 
 enum StatusSocio : string{
     case ATIVO = 'Ativo';
