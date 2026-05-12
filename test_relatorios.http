@@ -6,7 +6,9 @@
 # GET / - API ENDPOINTS
 GET http://localhost:8000/api/
 
-###x'
+###
+
+# GET RELATORIO TOTAL SOCIOS - SUCCESS
 GET http://localhost:8000/api/relatorios/socios
 Accept: application/json
 
@@ -14,6 +16,27 @@ Accept: application/json
 
 # GET RELATORIO FINANCEIRO - SUCCESS
 GET http://localhost:8000/api/relatorios/financeiro
+Accept: application/json
+
+###
+
+# GET RELATORIO SOCIOS INADIMPLENTES (NOVO) - SUCCESS
+# Retorna lista de sócios que têm mensalidades não pagas
+GET http://localhost:8000/api/relatorios/inadimplentes
+Accept: application/json
+
+###
+
+# GET RELATORIO RECEITA MENSAL (NOVO) - SUCCESS
+# Retorna a receita agrupada por mês dos pagamentos recebidos
+GET http://localhost:8000/api/relatorios/receita-mensal
+Accept: application/json
+
+###
+
+# GET RELATORIO QUANTIDADE SOCIOS ATIVOS/INATIVOS (NOVO) - SUCCESS
+# Retorna o total de sócios ativos e inativos, com percentuais
+GET http://localhost:8000/api/relatorios/quantidade-status
 Accept: application/json
 
 ###

@@ -80,6 +80,9 @@ php -S localhost:8000
 | `/api/mensalidades/:id`           | DELETE  | Deleta uma mensalidade.'                                     |
 | `/api/relatorios/socios`          | GET     | Mostra o numero total de socios.                             |
 | `/api/relatorios/financeiro`      | GET     | Mostra o valor total pago e o valor total de mensalidades'   |
+| `/api/relatorios/inadimplentes`   | GET     | Mostra lista de sócios com mensalidades não pagas.           |
+| `/api/relatorios/receita-mensal`  | GET     | Mostra receita agrupada por mês dos pagamentos recebidos.    |
+| `/api/relatorios/quantidade-status` | GET   | Mostra quantidade de sócios ativos e inativos com percentuais. |
 ---
 
 ## 🧪 Testando

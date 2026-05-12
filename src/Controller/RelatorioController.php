@@ -31,6 +31,15 @@ class RelatorioController
         } else if ($tipo === "financeiro") {
             $response = $this->service->getFinanceiroReport();
             Response::send($response);
+        } else if ($tipo === "inadimplentes") {
+            $response = $this->service->getSociosInadimplentesReport();
+            Response::send($response);
+        } else if ($tipo === "receita-mensal") {
+            $response = $this->service->getReceitaMensalReport();
+            Response::send($response);
+        } else if ($tipo === "quantidade-status") {
+            $response = $this->service->getQuantidadeSociosReport();
+            Response::send($response);
         } else {
             // Se for outro tipo, não foi encontrado
             throw new APIException("Resource not found or invalid report type!", 404);
