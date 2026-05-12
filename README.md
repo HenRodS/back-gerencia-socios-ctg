@@ -1,6 +1,8 @@
 # 📊 Sistema de Gestao CTG Raizes da (Backend)
 
-OBS: Foram mantidos os Endpoints/MVC anteriores para ter algo com que se basear. Conforme forem criando os Endpoints de verdade, removam os antigos (Que sao de outro projeto)
+## Tecnologias necessarias
+
+Xampp
 
 ## ⚙️ Configuração do Ambiente
 
