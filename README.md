@@ -46,6 +46,18 @@ EXIT;
 mysql -u ctg_user -p ctg < src/Database/schema.sql
 ```
 
+### 5. Popular banco de dados (PARA TESTES!)
+
+Execute no terminal
+```bash
+mysql -u ctg_user -p1234 ctg < src/Database/seed.sql
+```
+
+Para limpar o banco de dados:
+```bash
+mysql -u ctg_user -p1234 ctg < src/Database/cleanup.sql
+```
+
 ---
 
 ## ▶️ Executando o projeto
