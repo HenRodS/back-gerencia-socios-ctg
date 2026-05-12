@@ -1,6 +1,7 @@
 <?php
 namespace Repository;
 
+use Database\Database;
 use Model\CartaoTrad;
 use PDO;
 use DateTime;
@@ -11,7 +12,7 @@ class CartaoTradRepository
 
     public function __construct()
     {
-        $this->conn = DatabaseConnection::getConnection();
+        $this->conn = Database::getConnection();
     }
 
     public function findAll(): array

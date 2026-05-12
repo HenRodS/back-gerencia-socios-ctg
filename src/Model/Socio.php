@@ -154,7 +154,7 @@ class Socio implements JsonSerializable {
         $this->pagaInstrutor = $pagaInstrutor;
     }
 
-    public function setCartaoTrad(?Ca+rtaoTrad $cartaoTrad): void {
+    public function setCartaoTrad(?CartaoTrad $cartaoTrad): void {
         $this->cartaoTrad = $cartaoTrad;
     }
 

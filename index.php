@@ -43,6 +43,9 @@ switch ($request->getResource()) { //conforme o recurso solicitado
         $endpoints = [
             "GET /api/relatorios/socios",
             "GET /api/relatorios/financeiro",
+            "GET /api/relatorios/inadimplentes",
+            "GET /api/relatorios/receita-mensal",
+            "GET /api/relatorios/quantidade-status",
             "GET /api/mensalidades",
             "GET /api/mensalidades/:id",
             "POST /api/mensalidades",

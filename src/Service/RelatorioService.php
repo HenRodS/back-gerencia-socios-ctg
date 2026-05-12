@@ -22,4 +22,19 @@ class RelatorioService
     {
         return $this->repository->getResumoFinanceiro();
     }
+
+    function getSociosInadimplentesReport(): array
+    {
+        return $this->repository->getSociosInadimplentes();
+    }
+
+    function getReceitaMensalReport(): array
+    {
+        return $this->repository->getReceitaMensal();
+    }
+
+    function getQuantidadeSociosReport(): array
+    {
+        return $this->repository->getQuantidadeSociosAtivosInativos();
+    }
 }
