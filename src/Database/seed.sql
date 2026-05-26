@@ -12,12 +12,12 @@
 -- ================================
 
 -- Limpa data existente (opcional)
--- DELETE FROM pagamentos;
--- DELETE FROM cartao_tradicionalista;
--- DELETE FROM mensalidades;
--- DELETE FROM dependentes;
--- DELETE FROM socios;
--- DELETE FROM categorias;
+DELETE FROM pagamentos;
+DELETE FROM cartao_tradicionalista;
+DELETE FROM mensalidades;
+DELETE FROM dependentes;
+DELETE FROM socios;
+DELETE FROM categorias;
 
 -- Insert Categorias
 INSERT INTO categorias (id, nome, valor_sociedade, valor_instrutor) VALUES

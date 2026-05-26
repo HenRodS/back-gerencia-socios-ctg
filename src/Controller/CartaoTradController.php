@@ -41,23 +41,12 @@ class CartaoTradController {
             case "POST":
                 $data = $request->getBody();
 
-                // validações básicas
-                if (
-                    empty($data['data_entrada']) ||
-                    empty($data['validade']) ||
-                    empty($data['entidade_filiada']) ||
-                    empty($data['matricula']) ||
-                    empty($data['nome_patrao'])
-                ) {
-                    throw new APIException("Campos obrigatórios não informados!", 400);
-                }
-
                 $cartao = new CartaoTrad(
-                    new DateTime($data['data_entrada']),
-                    new DateTime($data['validade']),
-                    $data['entidade_filiada'],
-                    (int)$data['matricula'],
-                    $data['nome_patrao']
+                    socioId: isset($data['socio_id']) && $data['socio_id'] !== null ? (int)$data['socio_id'] : null,
+                    dependenteId: isset($data['dependente_id']) && $data['dependente_id'] !== null ? (int)$data['dependente_id'] : null,
+                    dataSolicitacao: new DateTime($data['data_solicitacao']),
+                    pago: (bool)$data['pago'],
+                    valor: (float)$data['valor']
                 );
 
                 $created = $this->cartaoService->create($cartao);
@@ -73,12 +62,12 @@ class CartaoTradController {
                 $data = $request->getBody();
 
                 $cartao = new CartaoTrad(
-                    new DateTime($data['data_entrada']),
-                    new DateTime($data['validade']),
-                    $data['entidade_filiada'],
-                    (int)$data['matricula'],
-                    $data['nome_patrao'],
-                    (int)$id
+                    socioId: isset($data['socio_id']) && $data['socio_id'] !== null ? (int)$data['socio_id'] : null,
+                    dependenteId: isset($data['dependente_id']) && $data['dependente_id'] !== null ? (int)$data['dependente_id'] : null,
+                    dataSolicitacao: new DateTime($data['data_solicitacao']),
+                    pago: (bool)$data['pago'],
+                    valor: (float)$data['valor'],
+                    id: (int)$id
                 );
 
                 $this->cartaoService->update($cartao);

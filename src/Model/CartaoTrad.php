@@ -2,81 +2,69 @@
 namespace Model;
 
 use DateTime;
+use JsonSerializable;
 
-class CartaoTrad {
+class CartaoTrad implements JsonSerializable {
 
     private ?int $id;
-    private DateTime $dataEntrada;
-    private DateTime $validade;
-    private string $entidadeFiliada;
-    private string $nomePatrao;
-    private int $matricula;
+    private ?int $socioId;
+    private ?int $dependenteId;
+    private DateTime $dataSolicitacao;
+    private bool $pago;
+    private float $valor;
 
     public function __construct(
-        DateTime $dataEntrada,
-        DateTime $validade,
-        string $entidadeFiliada,
-        int $matricula,
-        string $nomePatrao,
+        ?int $socioId,
+        ?int $dependenteId,
+        DateTime $dataSolicitacao,
+        bool $pago,
+        float $valor,
         ?int $id = null
     ) {
         $this->id = $id;
-        $this->dataEntrada = $dataEntrada;
-        $this->validade = $validade;
-        $this->entidadeFiliada = $entidadeFiliada;
-        $this->matricula = $matricula;
-        $this->nomePatrao = $nomePatrao;
+        $this->socioId = $socioId;
+        $this->dependenteId = $dependenteId;
+        $this->dataSolicitacao = $dataSolicitacao;
+        $this->pago = $pago;
+        $this->valor = $valor;
     }
-
-    // GETTERS
 
     public function getId(): ?int {
         return $this->id;
     }
 
-    public function getDataEntrada(): DateTime {
-        return $this->dataEntrada;
-    }
-
-    public function getValidade(): DateTime {
-        return $this->validade;
-    }
-
-    public function getEntidadeFiliada(): string {
-        return $this->entidadeFiliada;
-    }
-
-    public function getMatricula(): int {
-        return $this->matricula;
-    }
-
-    public function getNomePatrao(): string {
-        return $this->nomePatrao;
-    }
-
-    // SETTERS
-
     public function setId(int $id): void {
         $this->id = $id;
     }
 
-    public function setDataEntrada(DateTime $dataEntrada): void {
-        $this->dataEntrada = $dataEntrada;
+    public function getSocioId(): ?int {
+        return $this->socioId;
     }
 
-    public function setValidade(DateTime $validade): void {
-        $this->validade = $validade;
+    public function getDependenteId(): ?int {
+        return $this->dependenteId;
     }
 
-    public function setEntidadeFiliada(string $entidadeFiliada): void {
-        $this->entidadeFiliada = $entidadeFiliada;
+    public function getDataSolicitacao(): DateTime {
+        return $this->dataSolicitacao;
     }
 
-    public function setMatricula(int $matricula): void {
-        $this->matricula = $matricula;
+    public function isPago(): bool {
+        return $this->pago;
     }
 
-    public function setNomePatrao(string $nomePatrao): void {
-        $this->nomePatrao = $nomePatrao;
+    public function getValor(): float {
+        return $this->valor;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'socio_id' => $this->socioId,
+            'dependente_id' => $this->dependenteId,
+            'data_solicitacao' => $this->dataSolicitacao->format('Y-m-d'),
+            'pago' => $this->pago,
+            'valor' => $this->valor
+        ];
     }
 }

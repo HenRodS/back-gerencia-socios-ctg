@@ -2,69 +2,65 @@
 namespace Model;
 
 use DateTime;
-use Util\Endereco;
-use Util\CategoriaSocio;
+use JsonSerializable;
 
-class Dependente {
+class Dependente implements JsonSerializable {
 
     private ?int $id;
     private int $socioTitularId;
-    private string $nome;
+    private string $nomeCompleto;
     private string $cpf;
     private string $telefone;
-    private string $foto;
     private string $identidade;
-    private Endereco $endereco;
+    private string $endereco;
     private DateTime $dataNascimento;
     private DateTime $dataEntrada;
-    private CategoriaSocio $categoria;
+    private int $categoriaId;
     private bool $dancarino;
     private bool $pagaInstrutor;
 
-    private ?CartaoTrad $cartaoTrad = null;
-
     public function __construct(
         int $socioTitularId,
-        string $nome,
+        string $nomeCompleto,
         string $cpf,
         string $telefone,
-        string $foto,
         string $identidade,
-        Endereco $endereco,
+        string $endereco,
         DateTime $dataNascimento,
         DateTime $dataEntrada,
-        CategoriaSocio $categoria,
+        int $categoriaId,
         bool $dancarino,
         bool $pagaInstrutor,
-        ?int $id = null,
-        ?CartaoTrad $cartaoTrad = null
+        ?int $id = null
     ){
         $this->id = $id;
         $this->socioTitularId = $socioTitularId;
-        $this->nome = $nome;
+        $this->nomeCompleto = $nomeCompleto;
         $this->cpf = $cpf;
         $this->telefone = $telefone;
-        $this->foto = $foto;
         $this->identidade = $identidade;
         $this->endereco = $endereco;
         $this->dataNascimento = $dataNascimento;
         $this->dataEntrada = $dataEntrada;
-        $this->categoria = $categoria;
+        $this->categoriaId = $categoriaId;
         $this->dancarino = $dancarino;
         $this->pagaInstrutor = $pagaInstrutor;
-        $this->cartaoTrad = $cartaoTrad;
     }
 
     public function getId(): ?int {
         return $this->id;
     }
 
+    public function setId(int $id): void {
+        $this->id = $id;
+    }
+
     public function getSocioTitularId(): int {
         return $this->socioTitularId;
     }
 
-    public function getNome(): string {
-        return $this->nome;
+    public function getNomeCompleto(): string {
+        return $this->nomeCompleto;
     }
 
     public function getCpf(): string {
@@ -75,15 +71,11 @@ class Dependente {
         return $this->telefone;
     }
 
-    public function getFoto(): string {
-        return $this->foto;
-    }
-
     public function getIdentidade(): string {
         return $this->identidade;
     }
 
-    public function getEndereco(): Endereco {
+    public function getEndereco(): string {
         return $this->endereco;
     }
 
@@ -95,8 +87,8 @@ class Dependente {
         return $this->dataEntrada;
     }
 
-    public function getCategoria(): CategoriaSocio {
-        return $this->categoria;
+    public function getCategoriaId(): int {
+        return $this->categoriaId;
     }
 
     public function isDancarino(): bool {
@@ -107,19 +99,20 @@ class Dependente {
         return $this->pagaInstrutor;
     }
 
-    public function getCartaoTrad(): ?CartaoTrad {
-        return $this->cartaoTrad;
-    }
-
-    public function setEndereco(Endereco $endereco): void {
-        $this->endereco = $endereco;
-    }
-
-    public function setCategoria(CategoriaSocio $categoria): void {
-        $this->categoria = $categoria;
-    }
-
-    public function setCartaoTrad(?CartaoTrad $cartaoTrad): void {
-        $this->cartaoTrad = $cartaoTrad;
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'socio_titular_id' => $this->socioTitularId,
+            'nome_completo' => $this->nomeCompleto,
+            'cpf' => $this->cpf,
+            'telefone' => $this->telefone,
+            'identidade' => $this->identidade,
+            'endereco' => $this->endereco,
+            'data_nascimento' => $this->dataNascimento->format('Y-m-d'),
+            'data_entrada' => $this->dataEntrada->format('Y-m-d'),
+            'categoria_id' => $this->categoriaId,
+            'dancarino' => $this->dancarino,
+            'paga_instrutor' => $this->pagaInstrutor
+        ];
     }
 }

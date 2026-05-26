@@ -5,7 +5,6 @@
 
 # GET / - API ENDPOINTS
 GET http://localhost:8000/api/
-
 ###
 
 # GET ALL SOCIOS - SUCCESS
@@ -21,17 +20,24 @@ Content-Type: application/json
 {
 	"nome": "Teste Silva",
 	"cpf": "999.999.999-99",
+	"email": "teste@email.com",
 	"telefone": "(11) 99999-9999",
 	"email" : "teste@gmail.com",
 	"foto": "http://example.com/foto.jpg",
 	"identidade": "MG-99.999.999",
-	"endereco": "Rua Teste, 999",
+	"logradouro": "Rua Teste",
+	"numero": "999",
+	"bairro": "Centro",
+	"cidade": "Belo Horizonte",
+	"estado": "MG",
+	"cep": "30000-000",
 	"data_nascimento": "1990-04-15",
 	"data_entrada": "2026-04-28",
 	"status": "Ativo",
-	"categoria_id": 3,
+	"categoria": "3",
 	"dancarino": true,
-	"paga_instrutor": false
+	"paga_instrutor": false,
+	"cartao_trad_id": 5
 }
 
 ###
@@ -49,17 +55,24 @@ Content-Type: application/json
 {
 	"nome": "Teste Silva Atualizado",
 	"cpf": "999.999.999-99",
+	"email": "teste.atualizado@email.com",
 	"telefone": "(11) 98888-8888",
 	"email": "testesila@gmail.com",
 	"foto": "http://example.com/foto2.jpg",
 	"identidade": "MG-99.999.999",
-	"endereco": "Rua Nova, 456",
+	"logradouro": "Rua Nova",
+	"numero": "456",
+	"bairro": "Savassi",
+	"cidade": "Belo Horizonte",
+	"estado": "MG",
+	"cep": "30111-000",
 	"data_nascimento": "1990-04-15",
 	"data_entrada": "2026-04-28",
 	"status": "Ativo",
-	"categoria_id": 3,
+	"categoria": "3",
 	"dancarino": true,
-	"paga_instrutor": true
+	"paga_instrutor": true,
+	"cartao_trad_id": 5
 }
 
 ###

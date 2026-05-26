@@ -68,7 +68,8 @@ class SocioService
         string $status,
         string $categoria,
         bool $dancarino,
-        bool $pagaInstrutor
+        bool $pagaInstrutor,
+        string $email = ''
     ): Socio {
 
         $endereco = new Endereco(
@@ -84,6 +85,7 @@ class SocioService
         $socio = new Socio(
             nome: $nome,
             cpf: $cpf,
+            email: $email,
             telefone: $telefone,
             foto: $foto,
             identidade: $identidade,

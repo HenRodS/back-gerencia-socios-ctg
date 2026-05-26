@@ -4,8 +4,6 @@ namespace Repository;
 
 use Database\Database;
 use Model\Dependente;
-use Util\Endereco;
-use Util\CategoriaSocio;
 use PDO;
 use DateTime;
 
@@ -20,7 +18,7 @@ class DependenteRepository
 
     public function findAll(): array
     {
-        $stmt = $this->connection->query("SELECT * FROM dependentes ORDER BY nome");
+        $stmt = $this->connection->query("SELECT * FROM dependentes ORDER BY nome_completo");
         $dependentes = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -32,9 +30,8 @@ class DependenteRepository
 
     public function findById(int $id): ?Dependente
     {
-        $stmt = $this->connection->prepare("SELECT * FROM dependentes WHERE id = :id");
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt = $this->connection->prepare("SELECT * FROM dependentes WHERE id = ?");
+        $stmt->execute([$id]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? $this->mapRowToDependente($row) : null;
@@ -43,10 +40,9 @@ class DependenteRepository
     public function findBySocioTitular(int $socioTitularId): array
     {
         $stmt = $this->connection->prepare(
-            "SELECT * FROM dependentes WHERE socio_titular_id = :socio_titular_id ORDER BY nome"
+            "SELECT * FROM dependentes WHERE socio_titular_id = ? ORDER BY nome_completo"
         );
-        $stmt->bindValue(':socio_titular_id', $socioTitularId, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt->execute([$socioTitularId]);
 
         $dependentes = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -58,72 +54,78 @@ class DependenteRepository
 
     public function create(Dependente $dependente): Dependente
     {
-        $sql = "INSERT INTO dependentes
-                (socio_titular_id, nome, cpf, telefone, foto, identidade,
-                 endereco, data_nascimento, data_entrada, categoria,
-                 dancarino, paga_instrutor, cartao_trad_id)
-                VALUES
-                (:socio_titular_id, :nome, :cpf, :telefone, :foto, :identidade,
-                 :endereco, :data_nascimento, :data_entrada, :categoria,
-                 :dancarino, :paga_instrutor, :cartao_trad_id)";
+        $stmt = $this->connection->prepare(
+            "INSERT INTO dependentes 
+             (socio_titular_id, nome_completo, cpf, telefone, identidade, endereco, 
+              data_nascimento, data_entrada, categoria_id, dancarino, paga_instrutor) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
 
-        $stmt = $this->connection->prepare($sql);
-        $this->bindDependenteParams($stmt, $dependente);
-        $stmt->execute();
+        $stmt->execute([
+            $dependente->getSocioTitularId(),
+            $dependente->getNomeCompleto(),
+            $dependente->getCpf(),
+            $dependente->getTelefone(),
+            $dependente->getIdentidade(),
+            $dependente->getEndereco(),
+            $dependente->getDataNascimento()->format('Y-m-d'),
+            $dependente->getDataEntrada()->format('Y-m-d'),
+            $dependente->getCategoriaId(),
+            $dependente->isDancarino() ? 1 : 0,
+            $dependente->isPagaInstrutor() ? 1 : 0
+        ]);
 
-        return $this->findById((int)$this->connection->lastInsertId());
+        $dependente->setId((int)$this->connection->lastInsertId());
+        return $dependente;
+    }
+
+    public function update(Dependente $dependente): void
+    {
+        $stmt = $this->connection->prepare(
+            "UPDATE dependentes SET 
+             socio_titular_id = ?, nome_completo = ?, cpf = ?, telefone = ?, 
+             identidade = ?, endereco = ?, data_nascimento = ?, data_entrada = ?, 
+             categoria_id = ?, dancarino = ?, paga_instrutor = ? 
+             WHERE id = ?"
+        );
+
+        $stmt->execute([
+            $dependente->getSocioTitularId(),
+            $dependente->getNomeCompleto(),
+            $dependente->getCpf(),
+            $dependente->getTelefone(),
+            $dependente->getIdentidade(),
+            $dependente->getEndereco(),
+            $dependente->getDataNascimento()->format('Y-m-d'),
+            $dependente->getDataEntrada()->format('Y-m-d'),
+            $dependente->getCategoriaId(),
+            $dependente->isDancarino() ? 1 : 0,
+            $dependente->isPagaInstrutor() ? 1 : 0,
+            $dependente->getId()
+        ]);
     }
 
     public function delete(int $id): void
     {
-        $stmt = $this->connection->prepare("DELETE FROM dependentes WHERE id = :id");
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt = $this->connection->prepare("DELETE FROM dependentes WHERE id = ?");
+        $stmt->execute([$id]);
     }
 
     private function mapRowToDependente(array $row): Dependente
     {
-        $endereco = new Endereco($row['endereco']);
-
-        $categoria = CategoriaSocio::from($row['categoria']);
-
-        $dependente = new Dependente(
-            (int)$row['socio_titular_id'],
-            $row['nome'],
-            $row['cpf'],
-            $row['telefone'],
-            $row['foto'],
-            $row['identidade'],
-            $endereco,
-            new DateTime($row['data_nascimento']),
-            new DateTime($row['data_entrada']),
-            $categoria,
-            (bool)$row['dancarino'],
-            (bool)$row['paga_instrutor'],
-            (int)$row['id']
-        );
-
-        return $dependente;
-    }
-
-    private function bindDependenteParams($stmt, Dependente $dependente): void
-    {
-        $stmt->bindValue(':socio_titular_id', $dependente->getSocioTitularId(), PDO::PARAM_INT);
-        $stmt->bindValue(':nome', $dependente->getNome());
-        $stmt->bindValue(':cpf', $dependente->getCpf());
-        $stmt->bindValue(':telefone', $dependente->getTelefone());
-        $stmt->bindValue(':foto', $dependente->getFoto());
-        $stmt->bindValue(':identidade', $dependente->getIdentidade());
-        $stmt->bindValue(':endereco', (string)$dependente->getEndereco());
-        $stmt->bindValue(':data_nascimento', $dependente->getDataNascimento()->format('Y-m-d'));
-        $stmt->bindValue(':data_entrada', $dependente->getDataEntrada()->format('Y-m-d'));
-        $stmt->bindValue(':categoria', $dependente->getCategoria()->value);
-        $stmt->bindValue(':dancarino', $dependente->isDancarino() ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':paga_instrutor', $dependente->isPagaInstrutor() ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(
-            ':cartao_trad_id',
-            $dependente->getCartaoTrad()?->getId(),
-            $dependente->getCartaoTrad() ? PDO::PARAM_INT : PDO::PARAM_NULL
+        return new Dependente(
+            socioTitularId: (int)$row['socio_titular_id'],
+            nomeCompleto: $row['nome_completo'],
+            cpf: $row['cpf'],
+            telefone: $row['telefone'],
+            identidade: $row['identidade'],
+            endereco: $row['endereco'],
+            dataNascimento: new DateTime($row['data_nascimento']),
+            dataEntrada: new DateTime($row['data_entrada']),
+            categoriaId: (int)$row['categoria_id'],
+            dancarino: (bool)$row['dancarino'],
+            pagaInstrutor: (bool)$row['paga_instrutor'],
+            id: (int)$row['id']
         );
     }
 }

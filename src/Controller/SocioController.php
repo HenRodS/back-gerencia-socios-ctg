@@ -56,6 +56,7 @@ class SocioController{
                 $socio = new Socio(
                     $data['nome'],
                     $data['cpf'],
+                    $data['email'] ?? '',
                     $data['telefone'],
                     $data['email'],
                     $data['foto'] ?? '',
@@ -68,6 +69,11 @@ class SocioController{
                     (bool)$data['dancarino'],
                     (bool)$data['paga_instrutor']
                 );
+                
+                if (isset($data['cartao_trad_id'])) {
+                    $cartao = new \Model\CartaoTrad(null, null, new DateTime(), false, 0, (int)$data['cartao_trad_id']);
+                    $socio->setCartaoTrad($cartao);
+                }
 
                 $created = $this->socioService->create($socio);
 
@@ -94,6 +100,7 @@ class SocioController{
                 $socio = new Socio(
                     $data['nome'],
                     $data['cpf'],
+                    $data['email'] ?? '',
                     $data['telefone'],
                     $data['email'],
                     $data['foto'] ?? '',
@@ -107,6 +114,11 @@ class SocioController{
                     (bool)$data['paga_instrutor'],
                     (int)$id
                 );
+
+                if (isset($data['cartao_trad_id'])) {
+                    $cartao = new \Model\CartaoTrad(null, null, new DateTime(), false, 0, (int)$data['cartao_trad_id']);
+                    $socio->setCartaoTrad($cartao);
+                }
 
                 $this->socioService->update($socio);
 
