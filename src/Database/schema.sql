@@ -2,7 +2,6 @@ CREATE TABLE `socios` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `nome_completo` varchar(255),
   `telefone` varchar(255),
-  `email` varchar(255),
   `cpf` varchar(255) UNIQUE,
   `email` varchar(255),
   `foto` blob,
