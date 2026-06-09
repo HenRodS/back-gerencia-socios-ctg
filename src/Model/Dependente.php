@@ -1,118 +1,151 @@
 <?php
+
 namespace Model;
 
 use DateTime;
 use JsonSerializable;
+use Util\CategoriaSocio;
 
-class Dependente implements JsonSerializable {
-
+class Dependente implements JsonSerializable
+{
     private ?int $id;
     private int $socioTitularId;
     private string $nomeCompleto;
     private string $cpf;
-    private string $telefone;
-    private string $identidade;
-    private string $endereco;
+    private ?string $foto;
     private DateTime $dataNascimento;
     private DateTime $dataEntrada;
-    private int $categoriaId;
+    private CategoriaSocio $categoria;
     private bool $dancarino;
-    private bool $pagaInstrutor;
 
     public function __construct(
         int $socioTitularId,
         string $nomeCompleto,
         string $cpf,
-        string $telefone,
-        string $identidade,
-        string $endereco,
         DateTime $dataNascimento,
         DateTime $dataEntrada,
-        int $categoriaId,
+        CategoriaSocio $categoria,
         bool $dancarino,
-        bool $pagaInstrutor,
+        ?string $foto = null,
         ?int $id = null
-    ){
+    ) {
         $this->id = $id;
         $this->socioTitularId = $socioTitularId;
         $this->nomeCompleto = $nomeCompleto;
         $this->cpf = $cpf;
-        $this->telefone = $telefone;
-        $this->identidade = $identidade;
-        $this->endereco = $endereco;
+        $this->foto = $foto;
         $this->dataNascimento = $dataNascimento;
         $this->dataEntrada = $dataEntrada;
-        $this->categoriaId = $categoriaId;
+        $this->categoria = $categoria;
         $this->dancarino = $dancarino;
-        $this->pagaInstrutor = $pagaInstrutor;
     }
 
-    public function getId(): ?int {
+    // GETTERS
+
+    public function getId(): ?int
+    {
         return $this->id;
     }
 
-    public function setId(int $id): void {
-        $this->id = $id;
-    }
-
-    public function getSocioTitularId(): int {
+    public function getSocioTitularId(): int
+    {
         return $this->socioTitularId;
     }
 
-    public function getNomeCompleto(): string {
+    public function getNomeCompleto(): string
+    {
         return $this->nomeCompleto;
     }
 
-    public function getCpf(): string {
+    public function getCpf(): string
+    {
         return $this->cpf;
     }
 
-    public function getTelefone(): string {
-        return $this->telefone;
+    public function getFoto(): ?string
+    {
+        return $this->foto;
     }
 
-    public function getIdentidade(): string {
-        return $this->identidade;
-    }
-
-    public function getEndereco(): string {
-        return $this->endereco;
-    }
-
-    public function getDataNascimento(): DateTime {
+    public function getDataNascimento(): DateTime
+    {
         return $this->dataNascimento;
     }
 
-    public function getDataEntrada(): DateTime {
+    public function getDataEntrada(): DateTime
+    {
         return $this->dataEntrada;
     }
 
-    public function getCategoriaId(): int {
-        return $this->categoriaId;
+    public function getCategoria(): CategoriaSocio
+    {
+        return $this->categoria;
     }
 
-    public function isDancarino(): bool {
+    public function isDancarino(): bool
+    {
         return $this->dancarino;
     }
 
-    public function isPagaInstrutor(): bool {
-        return $this->pagaInstrutor;
+    // SETTERS
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
-    public function jsonSerialize(): array {
+    public function setSocioTitularId(int $socioTitularId): void
+    {
+        $this->socioTitularId = $socioTitularId;
+    }
+
+    public function setNomeCompleto(string $nomeCompleto): void
+    {
+        $this->nomeCompleto = $nomeCompleto;
+    }
+
+    public function setCpf(string $cpf): void
+    {
+        $this->cpf = $cpf;
+    }
+
+    public function setFoto(?string $foto): void
+    {
+        $this->foto = $foto;
+    }
+
+    public function setDataNascimento(DateTime $dataNascimento): void
+    {
+        $this->dataNascimento = $dataNascimento;
+    }
+
+    public function setDataEntrada(DateTime $dataEntrada): void
+    {
+        $this->dataEntrada = $dataEntrada;
+    }
+
+    public function setCategoria(CategoriaSocio $categoria): void
+    {
+        $this->categoria = $categoria;
+    }
+
+    public function setDancarino(bool $dancarino): void
+    {
+        $this->dancarino = $dancarino;
+    }
+
+    public function jsonSerialize(): array
+    {
         return [
             'id' => $this->id,
             'socio_titular_id' => $this->socioTitularId,
             'nome_completo' => $this->nomeCompleto,
             'cpf' => $this->cpf,
-            'telefone' => $this->telefone,
-            'identidade' => $this->identidade,
-            'endereco' => $this->endereco,
+            'foto' => $this->foto,
             'data_nascimento' => $this->dataNascimento->format('Y-m-d'),
             'data_entrada' => $this->dataEntrada->format('Y-m-d'),
-            'categoria_id' => $this->categoriaId,
+            'categoria' => $this->categoria->value,
             'dancarino' => $this->dancarino,
-            'paga_instrutor' => $this->pagaInstrutor
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace Repository;
 
 use Database\Database;
 use Model\Dependente;
+use Util\CategoriaSocio;
 use PDO;
 use DateTime;
 
@@ -56,23 +57,19 @@ class DependenteRepository
     {
         $stmt = $this->connection->prepare(
             "INSERT INTO dependentes 
-             (socio_titular_id, nome_completo, cpf, telefone, identidade, endereco, 
-              data_nascimento, data_entrada, categoria_id, dancarino, paga_instrutor) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+             (socio_titular_id, nome_completo, cpf, foto, data_nascimento, data_entrada, categoria_id, dancarino) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->execute([
             $dependente->getSocioTitularId(),
             $dependente->getNomeCompleto(),
             $dependente->getCpf(),
-            $dependente->getTelefone(),
-            $dependente->getIdentidade(),
-            $dependente->getEndereco(),
+            $dependente->getFoto(),
             $dependente->getDataNascimento()->format('Y-m-d'),
             $dependente->getDataEntrada()->format('Y-m-d'),
-            $dependente->getCategoriaId(),
+            $dependente->getCategoria()->value,
             $dependente->isDancarino() ? 1 : 0,
-            $dependente->isPagaInstrutor() ? 1 : 0
         ]);
 
         $dependente->setId((int)$this->connection->lastInsertId());
@@ -83,9 +80,8 @@ class DependenteRepository
     {
         $stmt = $this->connection->prepare(
             "UPDATE dependentes SET 
-             socio_titular_id = ?, nome_completo = ?, cpf = ?, telefone = ?, 
-             identidade = ?, endereco = ?, data_nascimento = ?, data_entrada = ?, 
-             categoria_id = ?, dancarino = ?, paga_instrutor = ? 
+             socio_titular_id = ?, nome_completo = ?, cpf = ?, foto = ?,
+             data_nascimento = ?, data_entrada = ?, categoria_id = ?, dancarino = ?
              WHERE id = ?"
         );
 
@@ -93,14 +89,11 @@ class DependenteRepository
             $dependente->getSocioTitularId(),
             $dependente->getNomeCompleto(),
             $dependente->getCpf(),
-            $dependente->getTelefone(),
-            $dependente->getIdentidade(),
-            $dependente->getEndereco(),
+            $dependente->getFoto(),
             $dependente->getDataNascimento()->format('Y-m-d'),
             $dependente->getDataEntrada()->format('Y-m-d'),
-            $dependente->getCategoriaId(),
+            $dependente->getCategoria()->value,
             $dependente->isDancarino() ? 1 : 0,
-            $dependente->isPagaInstrutor() ? 1 : 0,
             $dependente->getId()
         ]);
     }
@@ -117,15 +110,13 @@ class DependenteRepository
             socioTitularId: (int)$row['socio_titular_id'],
             nomeCompleto: $row['nome_completo'],
             cpf: $row['cpf'],
-            telefone: $row['telefone'],
-            identidade: $row['identidade'],
-            endereco: $row['endereco'],
+            foto: $row['foto'] ?? '',
             dataNascimento: new DateTime($row['data_nascimento']),
             dataEntrada: new DateTime($row['data_entrada']),
-            categoriaId: (int)$row['categoria_id'],
+            categoria: CategoriaSocio::from($row['categoria_id']),
             dancarino: (bool)$row['dancarino'],
-            pagaInstrutor: (bool)$row['paga_instrutor'],
             id: (int)$row['id']
         );
     }
 }
+
